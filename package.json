@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "body-parser": "^1.18.0",
+    "mongodb": "^2.2.31",
+    "node-inspector": "^1.1.1",
+    "readline-sync": "^1.4.7"
+  }
+}

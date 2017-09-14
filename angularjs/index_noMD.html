@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+  <link rel="stylesheet" href="css/style.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular-messages.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="../model/modelSpel.js"></script>
+  <script src="js/ctrl.js"></script>
+  <title>Mijnenveger</title>
+</head>
+<body>
+  <!-- <div id="bar">
+    <h1>Mijnenveger</h1>
+  </div> -->
+  <md-toolbar layout="row" class="md-toolbar-tools">
+    <h1>Mijnenveger</h1>
+  </md-toolbar>
+  <div id="gameHolder"
+      ng-cloack
+       ng-app="mijnenApp"
+       ng-controller="mijnenCtrl as ctrl">
+    <div id="message">
+      <h1 id="message_lose"
+          ng-show="ctrl.spel.boem"
+          class="animated bounceIn bounceOut">
+          BOOOOOMMMMM!!! GAME OVER!!!
+      </h1>
+      <h1 id="message_win"
+          ng-show="ctrl.spel.win"
+          class="animated bounceIn bounceOut">
+          YOU WIN!!!
+      </h1>
+    </div>
+    <div id="info" ng-show="!ctrl.spel || ctrl.spel.win">
+      <div id="nav-sm">
+        <div class="menu-sm" ng-class="{active: !ctrl.showCtrl2}" ng-click="ctrl.toggleViewCtrl(1)">Controls</div>
+        <div class="menu-sm" ng-class="{active: ctrl.showCtrl2}" ng-click="ctrl.toggleViewCtrl(2)">Ranking</div>
+      </div>
+      <div class="win" id="controls" ng-hide="!ctrl.showCtrl1">
+        <form ng-submit="ctrl.startGame()">
+          <h1>Game configuration</h1>
+          <div class="inpF">Naam: <input type="text" ng-model="ctrl.naam" required></div>
+          <div class="inpF">Rows: <input type="number" min="0" ng-model="ctrl.rijen"></div>
+          <div class="inpF">Cols: <input type="number" min="0" ng-model="ctrl.kolommen"></div>
+          <div class="inpF">Boms: <input type="number" min="0" ng-model="ctrl.bommen"></div>
+          <button class="button">Start game</button>
+        </form>
+      </div>
+      <div class="win" id="top3" ng-show="ctrl.showCtrl2">
+        <h1>Top 3</h1>
+        <form>
+
+            Search with
+
+            <!-- <input type="radio" ng-model="ctrl.sortOptie" value="naam"> name
+            <input type="radio" ng-model="ctrl.sortOptie" value="configuratie"> config <br> -->
+            <md-radio-group ng-model="ctrl.sortOptie" layout="row">
+
+            <md-radio-button value="naam" aria-label="Name">
+              Name
+            </md-radio-button>
+
+            <md-radio-button ng-value="configuratie" aria-label="Config">
+              Config
+            </md-radio-button>
+          </md-radio-group>
+            <!-- <select ng-model="ctrl.namen"  ng-options="item for item in ctrl.fullLijst.namen">
+              <option value="">All</option>
+            </select> <br><br> -->
+
+            <md-input-container>
+              <md-select ng-model="ctrl.namen" placeholder="Select a naam">
+                <md-option ng-value="nm" ng-repeat="nm in ctrl.fullLijst.namen">{{ nm }}</md-option>
+              </md-select>
+            </md-input-container>
+
+
+          <!-- <div ng-show="ctrl.sortOptie == 'configuratie'">
+          <select ng-model="rijen" ng-options="rij for rij in ctrl.fullLijst.rijen">
+          <option value="">All</option>
+        </select>
+        <select ng-model="kolommen" ng-options="kolom for kolom in ctrl.fullLijst.kolommen">
+        <option value="">All</option>
+      </select>
+    </div> -->
+        </form>
+        <!-- <p>rows: {{ctrl.top3[0].rijen}}, cols: {{ctrl.top3[0].kolommen}}, boms: {{ctrl.top3[0].bommen}}</p> -->
+        <table>
+          <thead>
+            <tr>
+              <td>Place</td>
+              <td>Naam</td>
+              <td>Tijd</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="speller in ctrl.top3 | orderBy: 'tijd' | limitTo: 3">
+              <td>{{$index + 1}}</td>
+              <td>{{speller.naam}}</td>
+              <td>{{speller.tijd}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="button">Show</button>
+      </div>
+
+    </div>
+    <div id="spelBoard" ng-show="ctrl.spel">
+      <div id="timer" ng-hide="ctrl.spel.win"><span >{{ctrl.tijd}}</span>
+        <button ng-click="ctrl.stopTimer()"
+                ng-show="ctrl.running"
+                ng-disabled="ctrl.spel.boem || ctrl.spel.win">
+                Pause
+        </button>
+        <button ng-click="ctrl.startTimer(ctrl.spel.timer.hernemen)"
+                ng-show="!ctrl.running && ctrl.tijd"
+                ng-disabled="ctrl.spel.boem || ctrl.spel.win">
+                Continue
+        </button>
+      </div>
+      <table ng-show="ctrl.running || ctrl.spel.boem">
+        <tr ng-repeat="rij in ctrl.spel.bord">
+          <td ng-repeat="vak in rij"
+              ng-class="{omgedraaid: vak.omgedraaid, nietOmgedraaid: !vak.omgedraaid}"
+              ng-click="ctrl.handleLC($parent.$index, $index)"
+              ng-right-click="ctrl.handleRC(vak)">
+            <span ng-show="vak.omgedraaid">{{vak.bomBuren}}</span>
+            <span ng-show="!vak.omgedraaid">{{vak.symboolBepalen()}}</span>
+            <span ng-show="ctrl.spel.boem && vak.bom">B</span>
+          </td>
+        </tr>
+      </table>
+      <!-- <md-grid-list md-cols="ctrl.spel.kolommen"  md-row-height="fit">
+        <md-grid-tile
+        ng-repeat="vak in ctrl.tableFlaten()"
+        ng-class="{omgedraaid: vak.omgedraaid, nietOmgedraaid: !vak.omgedraaid}"
+
+        >
+          <span ng-show="vak.omgedraaid">{{vak.bomBuren}}</span>
+          <span ng-show="!vak.omgedraaid">{{vak.symboolBepalen()}}</span>
+          <span ng-show="ctrl.spel.boem && vak.bom">B</span>
+        </md-grid-tile>
+      </md-grid-list> -->
+
+      <!-- <button class="button" ng-click="ctrl.reload()" ng-show="ctrl.spel.boem || ctrl.spel.win">Start new game</button> -->
+    </div>
+  </div>
+
+</body>
+</html>
