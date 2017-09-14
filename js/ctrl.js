@@ -59,8 +59,8 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
     }));
   };
 
-  this.zoek = function(rij, kolom) {
-    var array = [];
+  this.zoek = function(rij, kolom, array) {
+    // var array = [];
     // while () {
     //
     // }
@@ -164,15 +164,15 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
   this.handleLC = function(x, y) {
     if (this.running) {
       this.startTimer(this.spel.timer.starten);
-      if (!this.spel.bord[x][y].omgedraaid && this.spel.bord[x][y].symboolBepalen() != 'v') {
-        if (this.spel.bord[x][y].bom) {
-          this.spel.einde = true;
-        }  else {
-          this.spel.bord[x][y].omgedraaid = true;
-          this.draaiVakjesTrager(this.zoek(x, y, []));
-        }
-      }
-      // this.spel.vakjeOmdraaien(x, y);
+      // if (!this.spel.bord[x][y].omgedraaid && this.spel.bord[x][y].symboolBepalen() != 'v') {
+      //   if (this.spel.bord[x][y].bom) {
+      //     this.spel.einde = true;
+      //   }  else {
+      //     this.spel.bord[x][y].omgedraaid = true;
+      //     this.draaiVakjesTrager(this.zoek(x, y, []));
+      //   }
+      // }
+      this.spel.vakjeOmdraaien(x, y);
       if (this.spel.einde) {
         this.toonAlleBommen();
         this.stopTimer();
