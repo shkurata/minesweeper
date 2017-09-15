@@ -10,7 +10,8 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
   this.activeTab = 0;
   this.fullLijst = {};
   this.sortOptie = 'naam';
-  this.apiUrl = 'http://192.168.23.124:1111';
+  // this.apiUrl = 'http://192.168.23.124:1111';
+  this.apiUrl = 'http://localhost:1111';
   this.changeActiveTab = function(tabNum) {
     this.activeTab = tabNum;
   };

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+  <link rel="stylesheet" href="node_modules/animate.css/animate.min.css" />
   <link rel="stylesheet" href="node_modules/angular-material/angular-material.min.css" />
 
   <link rel="stylesheet" href="css/style.min.css" />
@@ -25,10 +25,24 @@
 <body ng-app="mijnenApp" ng-controller="mijnenCtrl as ctrl" ng-cloack>
   <md-toolbar layout="row" class="md-toolbar-tools">
     <h1>Mijnenveger</h1>
+    <div layout="column"  layout-align="center none" class="timer md-body-2 animated bounceInRight" ng-show="(ctrl.interval || ctrl.spel.speltijd) && !ctrl.spel.einde" ng-class="{bounceOutRight: ctrl.spel.einde}">
+      <div layout="row" layout-align="space-between center">
+        <span>Remaining bombs:</span><span>{{ctrl.spel.bommen - ctrl.spel.markedVakjes}}&nbsp</span>
+      </div>
+      <div layout="row" layout-align="space-between center">
+        <span>Time: {{ctrl.spel.speltijd}} seconds</span>
+        <span>
+          <md-icon md-svg-icon="{{ctrl.running ? 'pause' : 'play'}}" ng-click="ctrl.running ? ctrl.stopTimer() : ctrl.startTimer(ctrl.spel.timer.hernemen)"></md-icon>
+        </span>
+      </div>
+
+
+
+    </div>
   </md-toolbar>
   <md-content>
     <md-tabs md-selected="ctrl.activeTab" md-dynamic-height md-center-tabs class="centered-content" md-stretch-tabs="never">
-      <md-tab>
+      <md-tab ng-disabled="ctrl.interval">
         <md-tab-label>
           Controls
         </md-tab-label>
@@ -62,13 +76,11 @@
             </div>
             <md-button class="md-raised md-primary md-cornered" type="submit">Start game</md-button>
           </form>
-          <md-progress-linear md-mode="determinate"
-          ng-disabled="!ctrl.progressBarValue"
-          value="{{ctrl.progressBarValue}}">
-        </md-progress-linear>
+          <md-progress-linear md-mode="determinate" ng-disabled="!ctrl.progressBarValue" value="{{ctrl.progressBarValue}}">
+          </md-progress-linear>
         </md-tab-body>
       </md-tab>
-      <md-tab>
+      <md-tab ng-disabled="ctrl.interval">
         <md-tab-label>
           Ranking
         </md-tab-label>
@@ -106,20 +118,21 @@
                   <md-option ng-value="b" ng-repeat="b in ctrl.fullLijst.bommen | orderBy: b :true">{{ b }}</md-option>
                 </md-select>
               </md-input-container>
+              <md-button class="md-raised small-btn" ng-show="ctrl.bommenSel" ng-click="ctrl.kreegTop3(null, ctrl.rijenSel, ctrl.kolommenSel, ctrl.bommenSel)">Show</md-button>
             </div>
           </form>
           <md-list class="top3">
             <md-list-item flex class="md-title">
-                <div class="table-item" flex="30">Place</div>
-                <div class="table-item" flex="35">Name</div>
-                <div class="table-item" flex="35">Time</div>
+              <div class="table-item" flex="30">Place</div>
+              <div class="table-item" flex="35">Name</div>
+              <div class="table-item" flex="35">Time</div>
               <md-divider></md-divider>
             </md-list-item>
             <md-list-item ng-repeat="speller in ctrl.top3" ng-class="{mdTitle: speller.bold}" flex>
-                <div class="table-item" flex="30">{{$index + 1}}</div>
-                <div class="table-item" flex="35">{{speller.naam}}</div>
-                <div class="table-item" flex="35">{{speller.tijd}}</div>
-                <md-divider></md-divider>
+              <div class="table-item" flex="30">{{$index + 1}}</div>
+              <div class="table-item" flex="35">{{speller.naam}}</div>
+              <div class="table-item" flex="35">{{speller.tijd}}</div>
+              <md-divider></md-divider>
             </md-list-item>
           </md-list>
         </md-tab-body>
@@ -129,8 +142,8 @@
           Play
         </md-tab-label>
         <md-tab-body>
-          <md-content md-whiteframe="15" class="timer animated bounceInRight" ng-show="(ctrl.interval || ctrl.spel.speltijd) && !ctrl.spel.einde" ng-class="{bounceOutRight: ctrl.spel.einde}">
-            <md-toolbar class = "md-primary">
+          <!-- <md-content md-whiteframe="15" class="timer animated bounceInRight" ng-show="(ctrl.interval || ctrl.spel.speltijd) && !ctrl.spel.einde" ng-class="{bounceOutRight: ctrl.spel.einde}">
+            <md-toolbar class="md-primary">
               <div class="md-toolbar-tools">
                 <h2 md-truncate flex>Info</h2>
               </div>
@@ -143,26 +156,16 @@
               <md-divider></md-divider>
               "Remaining" bombs: <span>{{ctrl.spel.bommen - ctrl.spel.markedVakjes}}</span>
             </md-content>
-          </md-content>
+          </md-content> -->
+
           <table class="bord-table">
             <tr ng-repeat="rij in ctrl.spel.bord">
-              <td class="table-cell"
-                  md-colors="{background: 'primary-500-0.1', color: 'primary'}"
-                  ng-repeat="vak in rij"
-                  ng-click="ctrl.handleLC($parent.$index, $index)"
-                  ng-right-click="ctrl.handleRC(vak)">
+              <td class="table-cell" md-colors="{background: 'primary-500-0.1', color: 'primary'}" ng-repeat="vak in rij" ng-click="ctrl.handleLC($parent.$index, $index)" ng-right-click="ctrl.handleRC(vak)">
                 <span class="fixed" ng-show="vak.omgedraaid">{{vak.bomBuren}}</span>
-                <span class="niveau-2 fixed"
-                      ng-show="!vak.omgedraaid">{{vak.symboolBepalen()}}</span>
-                <span class="fixed"
-                      ng-show="ctrl.spel.einde && vak.bom">B</span>
-                <div class="cover animated"
-                    md-colors="{background: 'primary-500-1'}"
-                    ng-class="{flipOutY: vak.omgedraaid}"></div>
-                <div class="cover cover-table animated flipInX"
-                     md-colors="{background: 'primary-500-1'}"
-                     ng-class="{flipOutY: !ctrl.spel.speltijd || ctrl.interval}"
-                     ng-show="ctrl.spel.speltijd && !ctrl.interval && !ctrl.spel.einde">
+                <span class="niveau-2 fixed" ng-show="!vak.omgedraaid">{{vak.symboolBepalen()}}</span>
+                <span class="fixed" ng-show="ctrl.spel.einde && vak.bom">B</span>
+                <div class="cover animated" md-colors="{background: 'primary-500-1'}" ng-class="{flipOutY: vak.omgedraaid}"></div>
+                <div class="cover cover-table animated flipInX" md-colors="{background: 'primary-500-1'}" ng-class="{flipOutY: !ctrl.spel.speltijd || ctrl.interval}" ng-show="ctrl.spel.speltijd && !ctrl.interval && !ctrl.spel.einde">
                 </div>
               </td>
             </tr>
