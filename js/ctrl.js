@@ -52,64 +52,64 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
   };
 
   //omdraien met vertraging functies
-  this.tableReborn = function() {
-    return this.spel.bord.map((rij, i) => rij.map((vak, j) => {
-      vak.marked = false;
-
-      return vak;
-    }));
-  };
-
-  this.zoek = function(rij, kolom, array) {
-    // var array = [];
-    // while () {
-    //
-    // }
-    var buurBommen = 0;
-    var veiligeBuren = [];
-    for (var i = rij - 1; i <= rij + 1; i++) {
-        if (this.spel.bord[i]) {
-            for (var j = kolom - 1; j <= kolom + 1; j++) {
-                if (this.spel.bord[i][j]) {
-                    if (this.spel.bord[i][j].bom) {
-                        buurBommen++;
-                    } else {
-                        if (!this.spel.bord[i][j].marked) {
-                            veiligeBuren.push([i, j]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    this.spel.bord[rij][kolom].bomBuren = buurBommen;
-    veiligeBuren = !buurBommen ? veiligeBuren : [];
-    if (veiligeBuren.length) {
-      veiligeBuren.forEach(koords => {
-        var r = koords[0];
-        var k = koords[1];
-        if (!this.spel.bord[r][k].marked && this.spel.bord[r][k].symboolBepalen() != 'v') {
-          this.spel.bord[r][k].marked = true;
-          array.push(this.spel.bord[r][k]);
-          this.zoek(r, k, array);
-        }
-      });
-    }
-
-    return array;
-  };
-
-  this.draaiVakjesTrager = function(vakjes) {
-    // vakjes.forEach(vak => vak.omdraai());
-    (function f(index, array) {
-      if (index < array.length) {
-        setTimeout(function() {
-            array[index].omgedraaid = true;
-          f(index + 1, array);
-        }, 10);
-      }
-    })(0, vakjes);
-  };
+  // this.tableReborn = function() {
+  //   return this.spel.bord.map((rij, i) => rij.map((vak, j) => {
+  //     vak.marked = false;
+  //
+  //     return vak;
+  //   }));
+  // };
+  //
+  // this.zoek = function(rij, kolom, array) {
+  //   // var array = [];
+  //   // while () {
+  //   //
+  //   // }
+  //   var buurBommen = 0;
+  //   var veiligeBuren = [];
+  //   for (var i = rij - 1; i <= rij + 1; i++) {
+  //       if (this.spel.bord[i]) {
+  //           for (var j = kolom - 1; j <= kolom + 1; j++) {
+  //               if (this.spel.bord[i][j]) {
+  //                   if (this.spel.bord[i][j].bom) {
+  //                       buurBommen++;
+  //                   } else {
+  //                       if (!this.spel.bord[i][j].marked) {
+  //                           veiligeBuren.push([i, j]);
+  //                       }
+  //                   }
+  //               }
+  //           }
+  //       }
+  //   }
+  //   this.spel.bord[rij][kolom].bomBuren = buurBommen;
+  //   veiligeBuren = !buurBommen ? veiligeBuren : [];
+  //   if (veiligeBuren.length) {
+  //     veiligeBuren.forEach(koords => {
+  //       var r = koords[0];
+  //       var k = koords[1];
+  //       if (!this.spel.bord[r][k].marked && this.spel.bord[r][k].symboolBepalen() != 'v') {
+  //         this.spel.bord[r][k].marked = true;
+  //         array.push(this.spel.bord[r][k]);
+  //         this.zoek(r, k, array);
+  //       }
+  //     });
+  //   }
+  //
+  //   return array;
+  // };
+  //
+  // this.draaiVakjesTrager = function(vakjes) {
+  //   vakjes.forEach(vak => vak.omgedraaid = true);
+  //   // (function f(index, array) {
+  //   //   if (index < array.length) {
+  //   //     setTimeout(function() {
+  //   //         array[index].omgedraaid = true;
+  //   //       f(index + 1, array);
+  //   //     }, 10);
+  //   //   }
+  //   // })(0, vakjes);
+  // };
 
   this.rijSelChange = function() {
     $http.get(this.apiUrl + '/kolommen?rij=' + this.rijenSel)
@@ -136,7 +136,7 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
 
   this.startGame = function() {
     this.spel = new Spel(this.naam, this.bommen, this.rijen, this.kolommen);
-    this.spel.bord = this.tableReborn();
+    // this.spel.bord = this.tableReborn();
     this.saveConfig();
     this.kreegTop3('', self.rijen,self.kolommen,self.bommen);
     var progressBarInterval = $interval(function () {
