@@ -138,6 +138,7 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
     this.spel = new Spel(this.naam, this.bommen, this.rijen, this.kolommen);
     this.spel.bord = this.tableReborn();
     this.saveConfig();
+    this.kreegTop3('', self.rijen,self.kolommen,self.bommen);
     var progressBarInterval = $interval(function () {
       self.progressBarValue += 2;
     }, 5);
@@ -178,6 +179,7 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
         this.toonAlleBommen();
         this.stopTimer();
         this.showAlert('Booommmmmm!!!', 'You lose!!!');
+        console.log(this.spel.speltijd,  !this.interval , !this.spel.einde);
       }
     }
   };
@@ -187,6 +189,7 @@ app.controller('mijnenCtrl', ['$interval', '$timeout', '$http', '$mdDialog', fun
   };
   this.handleRC = function(vak) {
     if (this.running && !vak.omgedraaid) {
+      this.startTimer(this.spel.timer.starten);
       var currVal = vak.symboolBepalen();
       vak.vlag();
       if (vak.symboolBepalen() == 'v') {
